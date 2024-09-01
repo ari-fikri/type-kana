@@ -116,6 +116,9 @@
    .mistakes-container {
         margin: auto;
 	    text-align: center;
+        padding: 15px 0 15px 0;
+        background-color: #2c3e50;
+        display: none;
    }
 
    table {
@@ -133,10 +136,11 @@
    #false-chars td, #false th {
         border: 1px solid #ddd;
         padding: 8px;
+        color: white;
    }
 
    #false-chars tr th {
- 	    background-color: #7098b3;
+        background-color: #7098b3;
         color: white;
         padding: 10px;
         text-align: center;
@@ -144,7 +148,7 @@
    }
 
    #false-chars td.right{
-	    text-align: right;
+        text-align: right;
    }
     </style>
 </head>
@@ -167,7 +171,7 @@
  			<a class="btn btn-huge btn-info btn-embossed mlm">
  				<span class='fui-pause'></span>
 			</a>-->
-			<a class="btn btn-huge btn-info btn-embossed mlm">
+			<a id="btn-counter" class="btn btn-huge btn-info btn-embossed mlm">
  				<span class='fui-checkbox-checked'></span> &nbsp; <span class='score'>0 / 100</span>
 			</a>
      	</div>
@@ -396,7 +400,13 @@
 
     $('body, html').click(function () {
     	$('.romaji-container').focus();
-    })
+    });
+
+    $('#btn-counter').click( function(){ 
+        if (false_chars.length == 0) { return; } 
+
+        $(' .mistakes-container').slideToggle();
+    });
 
     //disable start button if num of chars is 0 or below
     $("#num_of_chars").bind('keyup mouseup', function () {
@@ -439,13 +449,18 @@
 		    }
     	});
 
-    	// clear all table row except for header
-		let table = document.getElementById("false-chars");
 
-		while (table.rows.length > 1) {
-		  table.deleteRow(1);
-		}
+        let table = document.getElementById("false-chars"); // clear all mistakes table's rows
+        if ($('.mistakes-container').css('display') == 'block') {
+            $('.mistakes-container').slideUp();
+            $('.mistakes-container').css('display', 'hidden');
+        }
 
+        setTimeout(function() {
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+        }, 1000);
     }
     var score = 0, time, timer;
     var started = false;
@@ -534,6 +549,11 @@
     		});
     		$('.buttons-start').fadeIn();
     		$('.btn-start .start').text('Restart');
+
+            //flash counter button on mistake found
+            if (false_chars.length > 0) {
+                $('#btn-counter').fadeOut(500).fadeIn(1000).fadeOut(500).fadeIn(1000).fadeOut(500).fadeIn(1000);
+            }
 
     		started = false;
     	}
